@@ -169,7 +169,7 @@ def agglomerative_best_rsi(df: pd.DataFrame, num_clusters: int = 3):
     return df
 
 
-def dbscan_best_rsi(df: pd.DataFrame):
+def dbscan_best_rsi(df: pd.DataFrame, min_threshold = 2):
     """
     Perform DBSCAN clustering on the given feature DataFrame, selecting the 
     cluster with the best performing RSI stocks.
@@ -214,7 +214,7 @@ def dbscan_best_rsi(df: pd.DataFrame):
     
     # Filter DBSCAN output based on specified thresholds
     n_clu_max_thr = 5
-    n_clu_min_thr = 2
+    n_clu_min_thr = min_threshold
     data_frame_db = dbscan_out[(dbscan_out['n_clusters'] <= n_clu_max_thr) & 
                                (dbscan_out['n_clusters'] >= n_clu_min_thr)]
     
