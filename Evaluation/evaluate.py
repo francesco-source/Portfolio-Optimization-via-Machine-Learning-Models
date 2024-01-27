@@ -33,3 +33,7 @@ def calculate_sharpe_ratio(returns,
     volatility = calculate_volatility(returns)
     sharpe_ratio = (avg_return - risk_free_rate) / volatility
     return sharpe_ratio
+
+def calculate_cumulative_return(df):
+    df = np.exp(np.log1p(df).cumsum()) - 1
+    return df.iloc[-1].values

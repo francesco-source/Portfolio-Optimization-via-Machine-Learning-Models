@@ -6,7 +6,8 @@ def plot_portfolio_cumulative_return(portfolio_df,
                                      figsize= (16, 6),
                                      title= 'Unsupervised Learning Trading Strategy Returns Over Time',
                                      refering_index= None,
-                                     random_returns_df= None):
+                                     random_returns_df= None,
+                                     save_path= None):
     """
     Plot cumulative return of a portfolio over time.
 
@@ -46,6 +47,8 @@ def plot_portfolio_cumulative_return(portfolio_df,
     plt.title(title)
     plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(1))
     plt.ylabel('Return')
+    if save_path is not None:
+        plt.savefig(save_path)
     plt.show()
 
 # Example usage:
