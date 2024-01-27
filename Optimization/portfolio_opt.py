@@ -5,7 +5,8 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
-
+from scipy.stats import norm            
+import matplotlib.pyplot as plt
 
 def optimize_weights(prices, lower_bound=0):
     """
@@ -105,7 +106,25 @@ def buy_or_sell(dataframe, start_date,
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = slope
             except:
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = 0
+    
+    elif mode == "Persistency":
+        for stock in choosen_stocks:
+            today = start_date_timestamp
+            yesterday = start_date_timestamp - pd.offsets.Day(1)
 
+            # If yesterday adj close is smaller, then consider a positive offset for this month
+            if past_data[stock].loc[today] > past_data[stock].loc[yesterday]:
+                angular_coeff_df.loc[stock, 'Angular_Coefficient'] = +1
+            else:
+                angular_coeff_df.loc[stock, 'Angular_Coefficient'] = -1
+
+    
+    elif mode == "Random":
+        # for stock in choosen_stocks:
+        #     # Assign a random offset for each stocks
+        #     angular_coeff_df.loc[stock, 'Angular_Coefficient'] = np.random.choice([-1, 1])
+        return np.random.choice([-1, 1])
+    
     # Calculate returns based on angular coefficients and portfolio weights
     returns = []
     for i in range(len(angular_coeff_df)):
@@ -163,13 +182,13 @@ def daily_portfolio_return(choosen_stocks: dict,
                 # If optimization fails, use equal weights for all stocks
                 weights = pd.DataFrame([1/len(optimization_df.columns) for i in range(len(optimization_df.columns))],
                                        index=optimization_df.columns.tolist(), columns=pd.Series(0)).T
-            
+
             if stop_loss:
                 # Apply stop-loss mechanism
-                slope_returns = buy_or_sell(fresh_data, start_date=start_date, port_weights=weights,
-                                            choosen_stocks=cols, off_set_days=off_set_days, mode=mode,order = order)
+                slope_returns = buy_or_sell(fresh_data, start_date= start_date, port_weights= weights,
+                                            choosen_stocks= cols, off_set_days= off_set_days, mode= mode, order= order)
 
-            temp_df = returns_dataframe[start_date:end_date]  # Daily returns for the month
+            temp_df = returns_dataframe[start_date: end_date]  # Daily returns for the month
             temp_df = temp_df.stack().to_frame('return').reset_index(level=0)\
                 .merge(weights.stack().to_frame('weight').reset_index(level=0, drop=True), left_index=True,
                        right_index=True).reset_index().set_index(['Date', 'index']).unstack().stack()
@@ -193,3 +212,82 @@ def daily_portfolio_return(choosen_stocks: dict,
 
     return portfolio_df  # Return DataFrame containing daily portfolio returns
 
+def get_random_baseline(choosen_stocks: dict,
+                        fresh_data: pd.DataFrame,
+                        samples: int = 50,
+                        confidence_level: float = .95):
+
+    counter = 0
+    returns_dataframe = np.log(fresh_data['Adj Close']).diff()  # Compute daily returns
+    portfolio_df = pd.DataFrame()  # Initialize DataFrame to store portfolio returns
+
+    for start_date in choosen_stocks.keys():  # Iterate over start dates of each month
+        try:
+            end_date = (pd.to_datetime(start_date) + pd.offsets.MonthEnd(0)).strftime('%Y-%m-%d')  # End date of the month
+            cols = choosen_stocks[start_date]  # Stocks chosen for the month
+
+            # Define start and end dates for the optimization window (one year prior to the start date)
+            optimization_start_date = (pd.to_datetime(start_date) - pd.DateOffset(months=12)).strftime('%Y-%m-%d')
+            optimization_end_date = (pd.to_datetime(start_date) - pd.DateOffset(days=1)).strftime('%Y-%m-%d')
+
+            # Historical prices for optimization
+            optimization_df = fresh_data[optimization_start_date:optimization_end_date]['Adj Close'][cols]  
+
+            success = False
+            try:
+                # Optimize portfolio weights using historical prices
+                weights = optimize_weights(prices=optimization_df, lower_bound=0.001)
+                weights = pd.DataFrame(weights, index=pd.Series(0))
+                success = True
+            except:
+                pass
+            
+            if success == False:
+                # If optimization fails, use equal weights for all stocks
+                weights = pd.DataFrame([1/len(optimization_df.columns) for i in range(len(optimization_df.columns))],
+                                       index=optimization_df.columns.tolist(), columns=pd.Series(0)).T
+
+            temp_df = returns_dataframe[start_date: end_date]  # Daily returns for the month
+            temp_df = temp_df.stack().to_frame('return').reset_index(level=0)\
+                .merge(weights.stack().to_frame('weight').reset_index(level=0, drop=True), left_index=True,
+                    right_index=True).reset_index().set_index(['Date', 'index']).unstack().stack()
+            temp_df.index.names = ['date', 'ticker']
+            temp_df['weighted_return'] = temp_df['return'] * temp_df['weight']  # Compute weighted returns
+            temp_df = temp_df.groupby(level=0)['weighted_return'].sum().to_frame('Strategy Return')  # Aggregate daily returns
+            
+            temp_df = pd.DataFrame(np.concatenate([temp_df["Strategy Return"].values.reshape(-1,1)]*samples, axis= 1),
+                                   index = temp_df.index,
+                                   columns = list(range(samples))
+                                    )
+
+            for i in range(samples):
+                slope_returns = np.random.choice([-1,1])
+                if slope_returns < 0.:
+                    temp_df[i] = 0.
+                    counter += 1
+
+            # display(temp_df.head())
+
+            portfolio_df = pd.concat([portfolio_df, temp_df], axis=0)  # Concatenate monthly returns to portfolio DataFrame
+        except KeyError:
+            pass
+        
+    portfolio_df =  np.exp(np.log1p(portfolio_df).cumsum()) - 1
+
+    # display(portfolio_df)
+    std = np.std(portfolio_df.values, axis= 1)
+    std_err = std / np.sqrt(samples)
+    alpha = 1 - confidence_level
+    z = norm.ppf(1 - alpha/2)
+
+    mean = np.mean(portfolio_df.values, axis= 1)
+    upper_bound = mean + std_err * z
+    lower_bound = mean - std_err * z
+    
+    portfolio_df = pd.DataFrame(np.array([mean, upper_bound, lower_bound]).T,
+                            index = portfolio_df.index,
+                            columns = ["Mean", "Up", "Down"])
+
+    print("Number of times the filter has been used: ", counter)
+
+    return portfolio_df  # Return DataFrame containing daily portfolio returns
