@@ -109,20 +109,12 @@ def buy_or_sell(dataframe, start_date,
     
     elif mode == "Persistency":
         for stock in choosen_stocks:
-            today = start_date_timestamp
-            yesterday = start_date_timestamp - pd.offsets.Day(1)
-
-            # If yesterday adj close is smaller, then consider a positive offset for this month
-            if past_data[stock].loc[today] > past_data[stock].loc[yesterday]:
+            if past_data[stock].diff().iloc[-1] > 0.:
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = +1
             else:
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = -1
-
     
     elif mode == "Random":
-        # for stock in choosen_stocks:
-        #     # Assign a random offset for each stocks
-        #     angular_coeff_df.loc[stock, 'Angular_Coefficient'] = np.random.choice([-1, 1])
         return np.random.choice([-1, 1])
     
     # Calculate returns based on angular coefficients and portfolio weights
@@ -203,7 +195,7 @@ def daily_portfolio_return(choosen_stocks: dict,
 
             portfolio_df = pd.concat([portfolio_df, temp_df], axis=0)  # Concatenate monthly returns to portfolio DataFrame
 
-        except Exception as e:
+        except KeyError as e:
             pass
     
     if stop_loss:
