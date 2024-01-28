@@ -108,9 +108,33 @@ def buy_or_sell(dataframe, start_date,
             except:
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = 0
 
-    # elif mode == "XGBoost":
-    #     try:
-    #         xgboost = XGBRegressor(objective = "reg:squarederror", n_estimators= 200)
+    elif mode == "XGBoost":
+        for stock in choosen_stocks:
+            try:
+                # Fit XGBoost model
+                xgboost = XGBRegressor(objective = "reg:squarederror", 
+                                       n_estimators = 1000,
+                                       max_depth = 4,
+                                       )
+                X = past_data[stock].dropna().values[:-1].reshape(-1,1)
+                y = past_data[stock].shift(-1).dropna().values
+                xgboost.fit(X, y)
+                
+                # Generate Forecast
+                forecast_steps = 7
+                forecast = np.zeros(forecast_steps + 1)
+                forecast[0] = y[-1]
+                for i in range(forecast_steps):
+                    forecast[i+1] = xgboost.predict(forecast[i].reshape(1,-1))
+            
+                # Fit linear regression model to forecast
+                linear_reg = LinearRegression()
+                x_values = np.arange(len(forecast))[:, np.newaxis]
+                linear_reg.fit(x_values, forecast)
+                slope = linear_reg.coef_[0]
+                angular_coeff_df.loc[stock, 'Angular_Coefficient'] = slope
+            except Exception as e:
+                angular_coeff_df.loc[stock, 'Angular_Coefficient'] = 0
 
     
     elif mode == "Persistency":
