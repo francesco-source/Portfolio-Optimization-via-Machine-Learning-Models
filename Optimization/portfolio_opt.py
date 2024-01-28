@@ -5,6 +5,7 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
+from xgboost import XGBRegressor
 from scipy.stats import norm            
 import matplotlib.pyplot as plt
 
@@ -106,6 +107,11 @@ def buy_or_sell(dataframe, start_date,
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = slope
             except:
                 angular_coeff_df.loc[stock, 'Angular_Coefficient'] = 0
+
+    # elif mode == "XGBoost":
+    #     try:
+    #         xgboost = XGBRegressor(objective = "reg:squarederror", n_estimators= 200)
+
     
     elif mode == "Persistency":
         for stock in choosen_stocks:
