@@ -27,19 +27,64 @@ Further analysis of the results can be found in the project report (`report.pdf`
   <figcaption>Compound returns for our proposed models in the Italian market between 2016-today</figcaption>
 </figure>
 
-<center>
+<style>
+  .centered-table {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+</style>
 
-| DBSCAN - Italy        | ROI   | σ     | Sharpe Ratio |
-|--------------|-------|-------|--------------|
-| Base         | 4.7%  | 0.015 | 0.009        |
-| Persistency  | 57.9% | 0.011 | 0.025        |
-| Regression   | 12.2% | 0.013 | 0.011        |
-| Arima        | 156%  | 0.01  | 0.044        |
-| Mean         | 57.8% | 0.013 | 0.022        |
-| FTSE MIB     | 17.9% | 0.014 | 0.013        |
-| Random       | 2.7%  | 0.008 | 0.004        |
-
-</center>
+<table class="centered-table">
+  <tr>
+    <th>DBSCAN - Italy</th>
+    <th>ROI</th>
+    <th>σ</th>
+    <th>Sharpe Ratio</th>
+  </tr>
+  <tr>
+    <td>Base</td>
+    <td>4.7%</td>
+    <td>0.015</td>
+    <td>0.009</td>
+  </tr>
+  <tr>
+    <td>Persistency</td>
+    <td>57.9%</td>
+    <td>0.011</td>
+    <td>0.025</td>
+  </tr>
+  <tr>
+    <td>Regression</td>
+    <td>12.2%</td>
+    <td>0.013</td>
+    <td>0.011</td>
+  </tr>
+  <tr>
+    <td>Arima</td>
+    <td>156%</td>
+    <td>0.01</td>
+    <td>0.044</td>
+  </tr>
+  <tr>
+    <td>Mean</td>
+    <td>57.8%</td>
+    <td>0.013</td>
+    <td>0.022</td>
+  </tr>
+  <tr>
+    <td>FTSE MIB</td>
+    <td>17.9%</td>
+    <td>0.014</td>
+    <td>0.013</td>
+  </tr>
+  <tr>
+    <td>Random</td>
+    <td>2.7%</td>
+    <td>0.008</td>
+    <td>0.004</td>
+  </tr>
+</table>
 
 
 <figure>
