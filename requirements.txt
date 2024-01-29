@@ -1,0 +1,8 @@
+numpy==1.25.2
+pandas==2.1.1
+pandas_ta==0.3.14b0
+pyportfolioopt==1.5.5
+scikit-learn==1.3.2
+xgboost==2.0.3
+yfinance==0.2.35
+financedatabase==2.2.1
