@@ -11,9 +11,22 @@ In this study, we tackle two main challenges in quantitative finance: selecting 
   <figcaption>Our proposed pipeline.</figcaption>
 </figure>
 
-- Detailed results and analysis can be found in the project report (`report.pdf`).
-- Visualizations and performance metrics are available in Jupyter notebooks (`American_market.ipynb`,`Italian_market.ipynb`).
 
+## Results
+Results are stored in the `Results` folder:
+- `Results/Image/` contains the plots for the obtained compound returns
+- `Results/Returns/` contains the calculated returns for each tested method
+- `Results/American_market.xlsx` and `Results/Italian_market.xlsx` store the evaluation metrics on the returns.
+
+Further analysis of the results can be found in the project report (`report.pdf`).<br>
+
+
+<figure>
+  <img src="Results\Images\IT_dbscan_val.png" alt="System_description">
+  <figcaption>Compound returns for our proposed models in the Italian market between 2016-today</figcaption>
+  <img src="Results\Images\US_dbscan_val.png" alt="System_description">
+  <figcaption>Compound returns for our proposed models in the American market between 2016-today</figcaption>
+</figure>
 
 ## Run using conda
 An easy way to reproduce the results is to create your own working environment using conda, typing the following commands.
@@ -25,7 +38,7 @@ An easy way to reproduce the results is to create your own working environment u
 2. Install the required dependencies<br>
 ``` pip install -r requirements.txt```
 
-3. Open Jupyter Notebook, connect to PortfolioOptimization kernel and run.
+3. Open Jupyter Notebook, connect to the PortfolioOptimization kernel and run.
 
 <!-- ## Key Features
 
@@ -37,7 +50,7 @@ An easy way to reproduce the results is to create your own working environment u
 
 
 
-## Folder Structure
+<!-- ## Folder Structure
 
 - `Dataset`: Contains the utility functions and the metrics used to build our costum dataset
 - `Optimization`: Contains the clustering techniques used and the portoflio optimization done over the sharpe ratio.
@@ -46,10 +59,7 @@ An easy way to reproduce the results is to create your own working environment u
 - `Italian_market`: Notebooks specific to the Italian market.
 - `American_market`: Notebooks specific to the American market.
 - `Images`: Images used in documentation and visualizations.
-
-## Results
-
--
+ -->
 
 ## Contributors
 
