@@ -20,13 +20,47 @@ Results are stored in the `Results` folder:
 
 Further analysis of the results can be found in the project report (`report.pdf`).<br>
 
+#### Example: DBSCAN in the validation dataset (years 2016 - 2024)
 
 <figure>
   <img src="Results\Images\IT_dbscan_val.png" alt="System_description">
   <figcaption>Compound returns for our proposed models in the Italian market between 2016-today</figcaption>
+</figure>
+
+<center>
+
+| DBSCAN - Italy        | ROI   | σ     | Sharpe Ratio |
+|--------------|-------|-------|--------------|
+| Base         | 4.7%  | 0.015 | 0.009        |
+| Persistency  | 57.9% | 0.011 | 0.025        |
+| Regression   | 12.2% | 0.013 | 0.011        |
+| Arima        | 156%  | 0.01  | 0.044        |
+| Mean         | 57.8% | 0.013 | 0.022        |
+| FTSE MIB     | 17.9% | 0.014 | 0.013        |
+| Random       | 2.7%  | 0.008 | 0.004        |
+
+</center>
+
+
+<figure>
   <img src="Results\Images\US_dbscan_val.png" alt="System_description">
   <figcaption>Compound returns for our proposed models in the American market between 2016-today</figcaption>
 </figure>
+
+<center>
+
+| DBSCAN -USA          | ROI   | σ     | Sharpe Ratio |
+|--------------|-------|-------|--------------|
+| Base         | 32.8% | 0.015 | 0.017        |
+| Persistency  | 42.0% | 0.011 | 0.021        |
+| Regression   | 116%  | 0.011 | 0.041        |
+| Arima        | 116%  | 0.010 | 0.042        |
+| Mean         | 76.7% | 0.012 | 0.030        |
+| S&P 500      | 141%  | 0.012 | 0.043        |
+| Random       | 17.9% | 0.008 | 0.015        |
+
+</center>
+
 
 ## Run using conda
 An easy way to reproduce the results is to create your own working environment using conda, typing the following commands.
